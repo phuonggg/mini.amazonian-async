@@ -6,6 +6,7 @@ class ReviewBuilder {
     const products = JSON.parse(
       fs.readFileSync("./data/products.json", "utf-8")
     );
+    // console.log("AAAAAA", products, "AAAAAA");
     const reviews = JSON.parse(fs.readFileSync("./data/reviews.json", "utf-8"));
     const users = JSON.parse(fs.readFileSync("./data/users.json", "utf-8"));
     return produceResult({ products, reviews, users });
@@ -28,11 +29,32 @@ class ReviewBuilder {
   }
 
   buildReviewsPromises() {
-    // FIXME
+    return Promise.all([
+      readFile("./data/products.json"),
+      readFile("./data/reviews.json"),
+      readFile("./data/users.json"),
+    ]).then((files) => {
+      const data = {};
+      const list = [];
+      files.forEach((file) => {
+        list.push(JSON.parse(file));
+      });
+      data.products = list[0];
+      data.reviews = list[1];
+      data.users = list[2];
+      return produceResult(data);
+    });
   }
 
   async buildReviewsAsyncAwait() {
     // FIXME
+    const productsResponse = await readFile("./data/products.json");
+    const products = JSON.parse(productsResponse);
+    const reviewsResponse = await readFile("./data/reviews.json");
+    const reviews = JSON.parse(reviewsResponse);
+    const usersResponse = await readFile("./data/users.json");
+    const users = JSON.parse(usersResponse);
+    return produceResult({ products, reviews, users });
   }
 }
 
